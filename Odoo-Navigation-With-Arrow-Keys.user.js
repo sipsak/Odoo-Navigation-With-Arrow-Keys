@@ -13,6 +13,7 @@
 // @updateURL       https://raw.githubusercontent.com/sipsak/Odoo-Navigation-With-Arrow-Keys/main/Odoo-Navigation-With-Arrow-Keys.user.js
 // @downloadURL     https://raw.githubusercontent.com/sipsak/Odoo-Navigation-With-Arrow-Keys/main/Odoo-Navigation-With-Arrow-Keys.user.js
 // ==/UserScript==
+
 (function() {
     'use strict';
     function makeCellsFocusable() {
