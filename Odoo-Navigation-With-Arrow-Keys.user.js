@@ -9,7 +9,7 @@
 // @match           https://portal.bskhvac.com.tr/*
 // @match           https://*.odoo.com/*
 // @grant           none
-// @icon            https://raw.githubusercontent.com/sipsak/odoo-image-enlarger/refs/heads/main/icon.png
+// @icon            data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNNDQuNTIxIDUuNWE0LjQ3NyA0LjQ3NyAwIDAgMSAwIDYuMzMybC0zNC4xOSAzNC4xOUg0VjM5LjY5TDM4LjE5IDUuNWE0LjQ3NyA0LjQ3NyAwIDAgMSA2LjMzMSAwWiIgZmlsbD0iIzJFQkNGQSIvPjxwYXRoIGQ9Ik0xMC45IDE1LjEyMiA0Ljg5OCA5LjEyYTkuMDA0IDkuMDA0IDAgMCAwIDEwLjQ4IDEyLjU2OGwyMy4wMDEgMjNhNC40NzcgNC40NzcgMCAwIDAgNi4zMzEtNi4zM2wtMjMtMjMuMDAxQTkuMDA0IDkuMDA0IDAgMCAwIDkuMTQxIDQuODc3bDYuMDAyIDYuMDAyLTQuMjQzIDQuMjQzWiIgZmlsbD0iIzk4NTE4NCIvPjxwYXRoIGQ9Ik0yNS4wMjMgMTguNjcgMTguNjkgMjVsNi4zMzIgNi4zMzFMMzEuMzUyIDI1bC02LjMzLTYuMzMxWiIgZmlsbD0iIzE0NDQ5NiIvPjwvc3ZnPgo=
 // @updateURL       https://raw.githubusercontent.com/sipsak/Odoo-Navigation-With-Arrow-Keys/main/Odoo-Navigation-With-Arrow-Keys.user.js
 // @downloadURL     https://raw.githubusercontent.com/sipsak/Odoo-Navigation-With-Arrow-Keys/main/Odoo-Navigation-With-Arrow-Keys.user.js
 // ==/UserScript==
@@ -30,7 +30,6 @@
         });
         cell.dispatchEvent(event);
 
-        // Hücreye geçince input elementini bul ve tüm metni seç
         setTimeout(function() {
             const input = cell.querySelector('input, textarea, select');
             if (input && (input.tagName.toLowerCase() === 'input' || input.tagName.toLowerCase() === 'textarea')) {
@@ -50,7 +49,6 @@
             return active;
         }
 
-        // Eğer TD içindeki bir input element aktifse
         const cell = active.closest('td');
         if (cell) {
             const input = cell.querySelector('input, textarea, select');
@@ -83,10 +81,8 @@
     function navigateCell(e) {
         if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) return;
 
-        // Shift, Alt veya Ctrl tuşları basılıysa işlem yapma
         if (e.shiftKey || e.altKey || e.ctrlKey) return;
 
-        // Dropdown açıkken hiçbir şey yapma
         const dropdown = document.querySelector('.o-autocomplete--dropdown-menu.show');
         if (dropdown) {
             return;
@@ -94,46 +90,35 @@
 
         const inputElement = getActiveInputElement();
 
-        // Eğer aktif bir input elementi varsa
         if (inputElement) {
-            // Input boşsa, doğrudan hücreler arası geçişe izin ver
             if (isInputEmpty(inputElement)) {
-                // Boş input olduğu için tüm oklar diğer hücreye geçiş yapabilir
-                // Devam edelim - yani bu if bloğundan çıkıp aşağıdaki koda gidelim
             }
-            // Tüm metin seçiliyse ve sol/sağ oka basıldıysa
             else if (isAllTextSelected(inputElement)) {
                 if (e.key === 'ArrowLeft') {
-                    // Sol ok tuşu - imleci en başa getir
                     e.preventDefault();
                     inputElement.setSelectionRange(0, 0);
                     return;
                 }
                 if (e.key === 'ArrowRight') {
-                    // Sağ ok tuşu - imleci en sona getir
                     e.preventDefault();
                     inputElement.setSelectionRange(inputElement.value.length, inputElement.value.length);
                     return;
                 }
             }
-            // Normal imleç kontrolü (boş değil ve metin seçili değilse)
             else {
                 if (e.key === 'ArrowLeft' && !isAtStartOfInput(inputElement)) {
-                    return; // İmleç başta değilse, normal imleç hareketi olsun
+                    return;
                 }
                 if (e.key === 'ArrowRight' && !isAtEndOfInput(inputElement)) {
-                    return; // İmleç sonda değilse, normal imleç hareketi olsun
+                    return;
                 }
             }
         }
 
-        // TD elementini bul
         let cell;
         if (inputElement) {
-            // Input elementinden üst TD'ye git
             cell = inputElement.closest('td');
         } else {
-            // Doğrudan hedef elementten TD'yi bul
             cell = e.target.closest('td');
         }
 
@@ -147,14 +132,32 @@
         const table = cell.closest('table.o_list_table');
         if (!table) return;
 
-        const rows = Array.from(table.querySelectorAll('tbody tr')).filter(r => r.querySelectorAll('td').length);
+        const rows = Array.from(table.querySelectorAll('tbody tr')).filter(r => r.querySelectorAll('td').length > 0);
         const rowIndex = rows.indexOf(row);
 
         let newRowIndex = rowIndex, newCellIndex = cellIndex;
 
-        if (e.key === 'ArrowUp') newRowIndex = rowIndex - 1;
-        else if (e.key === 'ArrowDown') newRowIndex = rowIndex + 1;
-        else if (e.key === 'ArrowRight') {
+        if (e.key === 'ArrowUp') {
+            let tempRowIndex = rowIndex - 1;
+            while (tempRowIndex >= 0) {
+                const tempRow = rows[tempRowIndex];
+                if (tempRow && !tempRow.classList.contains('o_is_line_section') && !tempRow.classList.contains('o_is_line_note')) {
+                    newRowIndex = tempRowIndex;
+                    break;
+                }
+                tempRowIndex--;
+            }
+        } else if (e.key === 'ArrowDown') {
+            let tempRowIndex = rowIndex + 1;
+            while (tempRowIndex < rows.length) {
+                const tempRow = rows[tempRowIndex];
+                if (tempRow && !tempRow.classList.contains('o_is_line_section') && !tempRow.classList.contains('o_is_line_note')) {
+                    newRowIndex = tempRowIndex;
+                    break;
+                }
+                tempRowIndex++;
+            }
+        } else if (e.key === 'ArrowRight') {
             let tempIndex = newCellIndex;
             while (tempIndex < cells.length - 1) {
                 tempIndex++;
@@ -164,8 +167,7 @@
                 }
             }
             if (newCellIndex === cellIndex) return;
-        }
-        else if (e.key === 'ArrowLeft') {
+        } else if (e.key === 'ArrowLeft') {
             let tempIndex = newCellIndex;
             while (tempIndex > 0) {
                 tempIndex--;
@@ -177,12 +179,14 @@
             if (newCellIndex === cellIndex) return;
         }
 
-        if (newRowIndex < 0 || newRowIndex >= rows.length) return;
+        if (newRowIndex === rowIndex && newCellIndex === cellIndex) return;
 
         const newCells = Array.from(rows[newRowIndex].querySelectorAll('td'));
         if (newCellIndex < 0 || newCellIndex >= newCells.length) return;
 
         const newCell = newCells[newCellIndex];
+        if (!newCell) return;
+
         newCell.focus();
 
         setTimeout(function() {
