@@ -2,12 +2,11 @@
 // @name            Odoo Navigation With Arrow Keys
 // @name:tr         Odoo Ok Tuşları İle Navigasyon
 // @namespace       https://github.com/sipsak
-// @version         1.1
+// @version         1.2.1
 // @description     Allows you to move between cells using arrow keys while in a table in Odoo
 // @description:tr  Odoo'da tablo içindeyken ok tuşları ile hücreler arası geçiş yapmayı sağlar
 // @author          Burak Şipşak
-// @match           https://portal.bskhvac.com.tr/*
-// @match           https://*.odoo.com/*
+// @match           *://*/*
 // @grant           none
 // @icon            data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNNDQuNTIxIDUuNWE0LjQ3NyA0LjQ3NyAwIDAgMSAwIDYuMzMybC0zNC4xOSAzNC4xOUg0VjM5LjY5TDM4LjE5IDUuNWE0LjQ3NyA0LjQ3NyAwIDAgMSA2LjMzMSAwWiIgZmlsbD0iIzJFQkNGQSIvPjxwYXRoIGQ9Ik0xMC45IDE1LjEyMiA0Ljg5OCA5LjEyYTkuMDA0IDkuMDA0IDAgMCAwIDEwLjQ4IDEyLjU2OGwyMy4wMDEgMjNhNC40NzcgNC40NzcgMCAwIDAgNi4zMzEtNi4zM2wtMjMtMjMuMDAxQTkuMDA0IDkuMDA0IDAgMCAwIDkuMTQxIDQuODc3bDYuMDAyIDYuMDAyLTQuMjQzIDQuMjQzWiIgZmlsbD0iIzk4NTE4NCIvPjxwYXRoIGQ9Ik0yNS4wMjMgMTguNjcgMTguNjkgMjVsNi4zMzIgNi4zMzFMMzEuMzUyIDI1bC02LjMzLTYuMzMxWiIgZmlsbD0iIzE0NDQ5NiIvPjwvc3ZnPgo=
 // @updateURL       https://raw.githubusercontent.com/sipsak/Odoo-Navigation-With-Arrow-Keys/main/Odoo-Navigation-With-Arrow-Keys.user.js
@@ -16,6 +15,12 @@
 
 (function() {
     'use strict';
+
+    const scriptTag = document.getElementById('web.layout.odooscript');
+    if (!scriptTag) {
+        return;
+    }
+
     function makeCellsFocusable() {
         document.querySelectorAll('table.o_list_table td').forEach(td => {
             if (!td.hasAttribute('tabindex')) td.setAttribute('tabindex', 0);
